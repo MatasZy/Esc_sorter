@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eurovizijos 2026 – Pairwise Sorter</title>
+<title>ESC 2026 Sorter</title>
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -12,6 +12,7 @@ body {
     color: white;
     padding: 20px;
 }
+
 .song {
     display: inline-block;
     width: 40%;
@@ -23,19 +24,10 @@ body {
     transition: 0.2s;
 }
 .song:hover {
-    background: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.3);
     transform: scale(1.05);
 }
-button {
-    padding: 10px 20px;
-    margin-top: 20px;
-    background: #ff0080;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-}
+
 #progress {
     margin-top: 15px;
     opacity: 0.8;
@@ -44,84 +36,103 @@ button {
 </head>
 <body>
 
-<h1>🎤 Eurovizijos 2026 – Pairwise Sorter</h1>
-<p>Rinkis, kuri šalis tau labiau patinka 👇</p>
+<h1>🎤 Eurovizijos 2026 Sorter</h1>
+<p>Pasirink labiau patinkančią šalį</p>
 
 <div id="battle"></div>
 <div id="progress"></div>
 <div id="results"></div>
-<button onclick="restart()">Pradėti iš naujo</button>
 
 <script>
-let songs = [
-    "🇱🇹 Lietuva", "🇸🇪 Švedija", "🇳🇴 Norvegija",
-    "🇫🇮 Suomija", "🇮🇹 Italija", "🇪🇸 Ispanija",
-    "🇫🇷 Prancūzija", "🇩🇪 Vokietija"
+let items = [
+    "🇱🇹 Lietuva",
+    "🇸🇪 Švedija",
+    "🇳🇴 Norvegija",
+    "🇫🇮 Suomija",
+    "🇮🇹 Italija",
+    "🇪🇸 Ispanija",
+    "🇫🇷 Prancūzija",
+    "🇩🇪 Vokietija"
 ];
 
-// taškai = kiek kartų laimėta
-let scores = {};
-// visos poros head-to-head
-let pairs = [];
-let current = 0;
+let totalComparisons = 0;
+let comparisons = 0;
 
-// Suformuojame visų porų sąrašą
-function generatePairs() {
-    pairs = [];
-    for (let i = 0; i < songs.length; i++) {
-        for (let j = i + 1; j < songs.length; j++) {
-            pairs.push([songs[i], songs[j]]);
+// Apskaičiuojam kiek maždaug reikės pasirinkimų
+function estimateComparisons(n) {
+    return Math.ceil(n * Math.log2(n));
+}
+
+async function interactiveMergeSort(arr) {
+    if (arr.length <= 1) return arr;
+
+    const mid = Math.floor(arr.length / 2);
+    const left = await interactiveMergeSort(arr.slice(0, mid));
+    const right = await interactiveMergeSort(arr.slice(mid));
+
+    return await merge(left, right);
+}
+
+function merge(left, right) {
+    return new Promise(resolve => {
+        let result = [];
+
+        function compare() {
+            if (!left.length) {
+                resolve(result.concat(right));
+                return;
+            }
+            if (!right.length) {
+                resolve(result.concat(left));
+                return;
+            }
+
+            showBattle(left[0], right[0], choice => {
+                comparisons++;
+                updateProgress();
+                if (choice === 0) {
+                    result.push(left.shift());
+                } else {
+                    result.push(right.shift());
+                }
+                compare();
+            });
         }
-    }
+
+        compare();
+    });
 }
 
-// Startuoju naują sesiją
-function start() {
-    scores = {};
-    songs.forEach(s => scores[s] = 0);
-    generatePairs();
-    current = 0;
-    showNext();
-}
-
-function showNext() {
-    if (current >= pairs.length) {
-        showResults();
-        return;
-    }
-    let [a, b] = pairs[current];
+function showBattle(a, b, callback) {
     document.getElementById("battle").innerHTML = `
-        <div class="song" onclick="vote('${a}', '${b}')">${a}</div>
-        <div class="song" onclick="vote('${b}', '${a}')">${b}</div>
+        <div class="song" onclick="choose(0)">${a}</div>
+        <div class="song" onclick="choose(1)">${b}</div>
     `;
+    window.choose = callback;
+}
+
+function updateProgress() {
     document.getElementById("progress").innerText =
-        "Progress: " + (current + 1) + " / " + pairs.length;
+        "Progresas: " + Math.round((comparisons / totalComparisons) * 100) + "%";
 }
 
-// Kai turi pasirinkimą
-function vote(winner, loser) {
-    scores[winner]++; // daugiau laimėjimų
-    current++;
-    showNext();
-}
-
-function showResults() {
+function showResults(sorted) {
     document.getElementById("battle").innerHTML = "";
     document.getElementById("progress").innerHTML = "";
 
-    let sorted = Object.entries(scores)
-        .sort((a,b) => b[1] - a[1]);
-
-    let html = `<h2>🏆 Tavo Reitingas</h2>`;
-    sorted.forEach((entry, i) => {
-        html += `<p>${i+1}. ${entry[0]} — ${entry[1]} laimėjimai</p>`;
+    let html = "<h2>🏆 Tavo Galutinis TOP</h2>";
+    sorted.forEach((item, i) => {
+        html += `<p>${i+1}. ${item}</p>`;
     });
+
     document.getElementById("results").innerHTML = html;
 }
 
-function restart() {
-    document.getElementById("results").innerHTML = "";
-    start();
+async function start() {
+    totalComparisons = estimateComparisons(items.length);
+    comparisons = 0;
+    const sorted = await interactiveMergeSort(items);
+    showResults(sorted);
 }
 
 start();
