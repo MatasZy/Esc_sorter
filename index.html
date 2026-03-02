@@ -14,25 +14,28 @@ body {
     padding: 20px;
 }
 
-h1 {
-    margin-bottom: 5px;
-}
-
 .song {
     display: inline-block;
-    width: 40%;
-    padding: 20px;
+    width: 45%;
+    padding: 15px;
     margin: 10px;
     background: rgba(255,255,255,0.1);
     border-radius: 12px;
-    cursor: pointer;
     transition: 0.2s;
-    font-size: 18px;
 }
 
 .song:hover {
-    background: rgba(255,255,255,0.3);
-    transform: scale(1.05);
+    background: rgba(255,255,255,0.2);
+}
+
+.song-title {
+    cursor: pointer;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+iframe {
+    border-radius: 8px;
 }
 
 #progress {
@@ -49,7 +52,7 @@ h1 {
 <body>
 
 <h1>🎤 Eurovizijos 2026 Sorter</h1>
-<p>Pasirink labiau patinkančią šalį</p>
+<p>Paklausyk ir pasirink labiau patinkančią dainą</p>
 
 <div id="battle"></div>
 <div id="progress"></div>
@@ -58,28 +61,28 @@ h1 {
 <script>
 
 let items = [
-    "🇦🇱 ALBANIA — Alis — Nán",
-    "🇦🇺 AUSTRALIA — Delta Goodrem — Eclipse",
-    "🇦🇹 AUSTRIA — Cosmó — Tanzschein",
-    "🇧🇪 BELGIUM — Essyla — Dancing On The Ice",
-    "🇧🇬 BULGARIA — Dara — Bangaranga",
-    "🇭🇷 CROATIA — Lelek — Andromeda",
-    "🇨🇾 CYPRUS — Antigoni — Jalla",
-    "🇩🇰 DENMARK — Søren Torpegaard Lund — Før Vi Går Hjem",
-    "🇪🇪 ESTONIA — Vanilla Ninja — Too Epic To Be True",
-    "🇫🇮 FINLAND — Linda & Pete — Liekinheitin",
-    "🇩🇪 GERMANY — Sarah Engels — Fire",
-    "🇬🇷 GREECE — Akylas — Ferto",
-    "🇮🇹 ITALY — Sal Da Vinci — Per Sempre Si",
-    "🇱🇻 LATVIA — Atvara — Ēnā",
-    "🇱🇹 LITHUANIA — Lion Ceccah — Sólo Quiero Más",
-    "🇱🇺 LUXEMBOURG — Eva Marija — Mother Nature",
-    "🇲🇹 MALTA — Aidan — Bella",
-    "🇲🇩 MOLDOVA — Satoshi — Viva, Moldova!",
-    "🇲🇪 MONTENEGRO — Tamara Živković — Nova Zora",
-    "🇳🇴 NORWAY — Jonas Lovv — Ya Ya Ya",
-    "🇷🇸 SERBIA — Lavina — Kraj Mene",
-    "🇺🇦 UKRAINE — Lelėka — Ridnym"
+    { name: "🇦🇱 ALBANIA — Alis — Nán", spotify: "" },
+    { name: "🇦🇺 AUSTRALIA — Delta Goodrem — Eclipse", spotify: "" },
+    { name: "🇦🇹 AUSTRIA — Cosmó — Tanzschein", spotify: "" },
+    { name: "🇧🇪 BELGIUM — Essyla — Dancing On The Ice", spotify: "" },
+    { name: "🇧🇬 BULGARIA — Dara — Bangaranga", spotify: "" },
+    { name: "🇭🇷 CROATIA — Lelek — Andromeda", spotify: "" },
+    { name: "🇨🇾 CYPRUS — Antigoni — Jalla", spotify: "" },
+    { name: "🇩🇰 DENMARK — Søren Torpegaard Lund — Før Vi Går Hjem", spotify: "" },
+    { name: "🇪🇪 ESTONIA — Vanilla Ninja — Too Epic To Be True", spotify: "" },
+    { name: "🇫🇮 FINLAND — Linda & Pete — Liekinheitin", spotify: "" },
+    { name: "🇩🇪 GERMANY — Sarah Engels — Fire", spotify: "" },
+    { name: "🇬🇷 GREECE — Akylas — Ferto", spotify: "" },
+    { name: "🇮🇹 ITALY — Sal Da Vinci — Per Sempre Si", spotify: "" },
+    { name: "🇱🇻 LATVIA — Atvara — Ēnā", spotify: "" },
+    { name: "🇱🇹 LITHUANIA — Lion Ceccah — Sólo Quiero Más", spotify: "" },
+    { name: "🇱🇺 LUXEMBOURG — Eva Marija — Mother Nature", spotify: "" },
+    { name: "🇲🇹 MALTA — Aidan — Bella", spotify: "" },
+    { name: "🇲🇩 MOLDOVA — Satoshi — Viva, Moldova!", spotify: "" },
+    { name: "🇲🇪 MONTENEGRO — Tamara Živković — Nova Zora", spotify: "" },
+    { name: "🇳🇴 NORWAY — Jonas Lovv — Ya Ya Ya", spotify: "" },
+    { name: "🇷🇸 SERBIA — Lavina — Kraj Mene", spotify: "" },
+    { name: "🇺🇦 UKRAINE — Lelėka — Ridnym", spotify: "" }
 ];
 
 let totalComparisons = 0;
@@ -124,11 +127,9 @@ function merge(left, right) {
                 comparisons++;
                 updateProgress();
 
-                if (choice === 0) {
-                    result.push(left.shift());
-                } else {
-                    result.push(right.shift());
-                }
+                if (choice === 0) result.push(left.shift());
+                else result.push(right.shift());
+
                 compare();
             });
         }
@@ -139,8 +140,21 @@ function merge(left, right) {
 
 function showBattle(a, b, callback) {
     document.getElementById("battle").innerHTML = `
-        <div class="song" onclick="choose(0)">${a}</div>
-        <div class="song" onclick="choose(1)">${b}</div>
+        <div class="song">
+            <div class="song-title" onclick="choose(0)">${a.name}</div>
+            <iframe src="https://open.spotify.com/embed/track/${a.spotify}"
+                width="100%" height="80" frameborder="0"
+                allow="autoplay; clipboard-write; encrypted-media;">
+            </iframe>
+        </div>
+
+        <div class="song">
+            <div class="song-title" onclick="choose(1)">${b.name}</div>
+            <iframe src="https://open.spotify.com/embed/track/${b.spotify}"
+                width="100%" height="80" frameborder="0"
+                allow="autoplay; clipboard-write; encrypted-media;">
+            </iframe>
+        </div>
     `;
     window.choose = callback;
 }
@@ -156,7 +170,7 @@ function showResults(sorted) {
 
     let html = "<h2>🏆 Tavo Galutinis TOP</h2>";
     sorted.forEach((item, i) => {
-        html += `<p>${i + 1}. ${item}</p>`;
+        html += `<p>${i + 1}. ${item.name}</p>`;
     });
 
     document.getElementById("results").innerHTML = html;
