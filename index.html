@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ESC 2026 Sorter</title>
+<title>ESC 2026 YouTube Sorter</title>
 
 <style>
 body {
@@ -16,15 +16,14 @@ body {
 
 .song {
     display: inline-block;
-    width: 250px;
+    width: 300px;
     padding: 15px;
     margin: 10px;
     background: rgba(255,255,255,0.1);
     border-radius: 12px;
     transition: 0.2s;
     vertical-align: top;
-    cursor: pointer; /* visą bloką padaro paspaudžiamą */
-    position: relative;
+    cursor: pointer;
 }
 
 .song:hover {
@@ -34,14 +33,12 @@ body {
 .song-title {
     font-size: 16px;
     margin-bottom: 10px;
-    pointer-events: none; /* kad spustelėjimas eitų į .song */
 }
 
 iframe {
     border-radius: 12px;
     width: 100%;
     height: 250px;
-    pointer-events: none; /* leidžia spustelėti per iframe */
 }
 
 #progress {
@@ -53,7 +50,6 @@ iframe {
     margin-top: 25px;
 }
 
-/* Responsive */
 @media (max-width: 600px) {
     .song {
         width: 90%;
@@ -65,8 +61,8 @@ iframe {
 
 <body>
 
-<h1>🎤 Eurovizijos 2026 Sorter</h1>
-<p>Paklausyk ir pasirink labiau patinkančią dainą</p>
+<h1>🎤 Eurovizijos 2026 Sorter (YouTube)</h1>
+<p>Paklausyk klipą ir pasirink labiau patinkančią dainą</p>
 
 <div id="battle"></div>
 <div id="progress"></div>
@@ -74,28 +70,28 @@ iframe {
 
 <script>
 let items = [
-    { name: "🇦🇱 ALBANIA — Alis — Nán", spotify: "40vsOMljwhHCibpToRULGo" },
-    { name: "🇦🇺 AUSTRALIA — Delta Goodrem — Eclipse", spotify: "" },
-    { name: "🇦🇹 AUSTRIA — Cosmó — Tanzschein", spotify: "" },
-    { name: "🇧🇪 BELGIUM — Essyla — Dancing On The Ice", spotify: "" },
-    { name: "🇧🇬 BULGARIA — Dara — Bangaranga", spotify: "" },
-    { name: "🇭🇷 CROATIA — Lelek — Andromeda", spotify: "" },
-    { name: "🇨🇾 CYPRUS — Antigoni — Jalla", spotify: "" },
-    { name: "🇩🇰 DENMARK — Søren Torpegaard Lund — Før Vi Går Hjem", spotify: "" },
-    { name: "🇪🇪 ESTONIA — Vanilla Ninja — Too Epic To Be True", spotify: "" },
-    { name: "🇫🇮 FINLAND — Linda & Pete — Liekinheitin", spotify: "0k2NxIVax5tnGSCeruFyEL" },
-    { name: "🇩🇪 GERMANY — Sarah Engels — Fire", spotify: "" },
-    { name: "🇬🇷 GREECE — Akylas — Ferto", spotify: "" },
-    { name: "🇮🇹 ITALY — Sal Da Vinci — Per Sempre Si", spotify: "" },
-    { name: "🇱🇻 LATVIA — Atvara — Ēnā", spotify: "" },
-    { name: "🇱🇹 LITHUANIA — Lion Ceccah — Sólo Quiero Más", spotify: "" },
-    { name: "🇱🇺 LUXEMBOURG — Eva Marija — Mother Nature", spotify: "" },
-    { name: "🇲🇹 MALTA — Aidan — Bella", spotify: "" },
-    { name: "🇲🇩 MOLDOVA — Satoshi — Viva, Moldova!", spotify: "" },
-    { name: "🇲🇪 MONTENEGRO — Tamara Živković — Nova Zora", spotify: "" },
-    { name: "🇳🇴 NORWAY — Jonas Lovv — Ya Ya Ya", spotify: "" },
-    { name: "🇷🇸 SERBIA — Lavina — Kraj Mene", spotify: "" },
-    { name: "🇺🇦 UKRAINE — Lelėka — Ridnym", spotify: "" }
+    { name: "🇦🇱 Albania — Alis — Nán", youtube: "VIDEO_ID_ALBANIA" },
+    { name: "🇦🇺 Australia — Delta Goodrem — Eclipse", youtube: "VIDEO_ID_AUSTRALIA" },
+    { name: "🇦🇹 Austria — Cosmó — Tanzschein", youtube: "VIDEO_ID_AUSTRIA" },
+    { name: "🇧🇪 Belgium — Essyla — Dancing On The Ice", youtube: "VIDEO_ID_BELGIUM" },
+    { name: "🇧🇬 Bulgaria — Dara — Bangaranga", youtube: "VIDEO_ID_BULGARIA" },
+    { name: "🇭🇷 Croatia — Lelek — Andromeda", youtube: "VIDEO_ID_CROATIA" },
+    { name: "🇨🇾 Cyprus — Antigoni — Jalla", youtube: "VIDEO_ID_CYPRUS" },
+    { name: "🇩🇰 Denmark — Søren Torpegaard Lund — Før Vi Går Hjem", youtube: "VIDEO_ID_DENMARK" },
+    { name: "🇪🇪 Estonia — Vanilla Ninja — Too Epic To Be True", youtube: "VIDEO_ID_ESTONIA" },
+    { name: "🇫🇮 Finland — Linda & Pete — Liekinheitin", youtube: "VIDEO_ID_FINLAND" },
+    { name: "🇩🇪 Germany — Sarah Engels — Fire", youtube: "VIDEO_ID_GERMANY" },
+    { name: "🇬🇷 Greece — Akylas — Ferto", youtube: "VIDEO_ID_GREECE" },
+    { name: "🇮🇹 Italy — Sal Da Vinci — Per Sempre Si", youtube: "VIDEO_ID_ITALY" },
+    { name: "🇱🇻 Latvia — Atvara — Ēnā", youtube: "VIDEO_ID_LATVIA" },
+    { name: "🇱🇹 Lithuania — Lion Ceccah — Sólo Quiero Más", youtube: "VIDEO_ID_LITHUANIA" },
+    { name: "🇱🇺 Luxembourg — Eva Marija — Mother Nature", youtube: "VIDEO_ID_LUXEMBOURG" },
+    { name: "🇲🇹 Malta — Aidan — Bella", youtube: "VIDEO_ID_MALTA" },
+    { name: "🇲🇩 Moldova — Satoshi — Viva, Moldova!", youtube: "VIDEO_ID_MOLDOVA" },
+    { name: "🇲🇪 Montenegro — Tamara Živković — Nova Zora", youtube: "VIDEO_ID_MONTENEGRO" },
+    { name: "🇳🇴 Norway — Jonas Lovv — Ya Ya Ya", youtube: "VIDEO_ID_NORWAY" },
+    { name: "🇷🇸 Serbia — Lavina — Kraj Mene", youtube: "VIDEO_ID_SERBIA" },
+    { name: "🇺🇦 Ukraine — Lelėka — Ridnym", youtube: "VIDEO_ID_UKRAINE" }
 ];
 
 let totalComparisons = 0;
@@ -114,18 +110,15 @@ function estimateComparisons(n) {
 
 async function interactiveMergeSort(arr) {
     if (arr.length <= 1) return arr;
-
     const mid = Math.floor(arr.length / 2);
     const left = await interactiveMergeSort(arr.slice(0, mid));
     const right = await interactiveMergeSort(arr.slice(mid));
-
     return await merge(left, right);
 }
 
 function merge(left, right) {
     return new Promise(resolve => {
         let result = [];
-
         function compare() {
             if (!left.length) {
                 resolve(result.concat(right));
@@ -135,18 +128,14 @@ function merge(left, right) {
                 resolve(result.concat(left));
                 return;
             }
-
             showBattle(left[0], right[0], choice => {
                 comparisons++;
                 updateProgress();
-
                 if (choice === 0) result.push(left.shift());
                 else result.push(right.shift());
-
                 compare();
             });
         }
-
         compare();
     });
 }
@@ -155,17 +144,19 @@ function showBattle(a, b, callback) {
     document.getElementById("battle").innerHTML = `
         <div class="song" onclick="choose(0)">
             <div class="song-title">${a.name}</div>
-            <iframe src="https://open.spotify.com/embed/track/${a.spotify}?utm_source=generator"
-                width="250" height="250" frameborder="0"
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen">
+            <iframe src="https://www.youtube.com/embed/${a.youtube}?rel=0"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
+                allowfullscreen>
             </iframe>
         </div>
 
         <div class="song" onclick="choose(1)">
             <div class="song-title">${b.name}</div>
-            <iframe src="https://open.spotify.com/embed/track/${b.spotify}?utm_source=generator"
-                width="250" height="250" frameborder="0"
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen">
+            <iframe src="https://www.youtube.com/embed/${b.youtube}?rel=0"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
+                allowfullscreen>
             </iframe>
         </div>
     `;
@@ -180,12 +171,10 @@ function updateProgress() {
 function showResults(sorted) {
     document.getElementById("battle").innerHTML = "";
     document.getElementById("progress").innerHTML = "";
-
     let html = "<h2>🏆 Tavo Galutinis TOP</h2>";
     sorted.forEach((item, i) => {
         html += `<p>${i + 1}. ${item.name}</p>`;
     });
-
     document.getElementById("results").innerHTML = html;
 }
 
@@ -194,7 +183,6 @@ async function start() {
     totalComparisons = estimateComparisons(items.length);
     comparisons = 0;
     updateProgress();
-
     const sorted = await interactiveMergeSort(items);
     showResults(sorted);
 }
