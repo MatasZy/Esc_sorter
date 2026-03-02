@@ -57,7 +57,6 @@ h1 {
 
 <script>
 
-// --- Dalyviai ---
 let items = [
     "🇦🇱 ALBANIA — Alis — Nán",
     "🇦🇺 AUSTRALIA — Delta Goodrem — Eclipse",
@@ -75,6 +74,7 @@ let items = [
     "🇱🇻 LATVIA — Atvara — Ēnā",
     "🇱🇹 LITHUANIA — Lion Ceccah — Sólo Quiero Más",
     "🇱🇺 LUXEMBOURG — Eva Marija — Mother Nature",
+    "🇲🇹 MALTA — Aidan — Bella",
     "🇲🇩 MOLDOVA — Satoshi — Viva, Moldova!",
     "🇲🇪 MONTENEGRO — Tamara Živković — Nova Zora",
     "🇳🇴 NORWAY — Jonas Lovv — Ya Ya Ya",
@@ -85,8 +85,6 @@ let items = [
 let totalComparisons = 0;
 let comparisons = 0;
 
-
-// --- Shuffle funkcija ---
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -94,14 +92,10 @@ function shuffle(array) {
     }
 }
 
-
-// --- Palyginimų kiekio įvertinimas ---
 function estimateComparisons(n) {
     return Math.ceil(n * Math.log2(n));
 }
 
-
-// --- Interaktyvus Merge Sort ---
 async function interactiveMergeSort(arr) {
     if (arr.length <= 1) return arr;
 
@@ -111,7 +105,6 @@ async function interactiveMergeSort(arr) {
 
     return await merge(left, right);
 }
-
 
 function merge(left, right) {
     return new Promise(resolve => {
@@ -144,8 +137,6 @@ function merge(left, right) {
     });
 }
 
-
-// --- Parodo dvikovą ---
 function showBattle(a, b, callback) {
     document.getElementById("battle").innerHTML = `
         <div class="song" onclick="choose(0)">${a}</div>
@@ -154,15 +145,11 @@ function showBattle(a, b, callback) {
     window.choose = callback;
 }
 
-
-// --- Atnaujina progresą ---
 function updateProgress() {
     document.getElementById("progress").innerText =
         "Progresas: " + Math.round((comparisons / totalComparisons) * 100) + "%";
 }
 
-
-// --- Parodo rezultatus ---
 function showResults(sorted) {
     document.getElementById("battle").innerHTML = "";
     document.getElementById("progress").innerHTML = "";
@@ -175,10 +162,8 @@ function showResults(sorted) {
     document.getElementById("results").innerHTML = html;
 }
 
-
-// --- Start ---
 async function start() {
-    shuffle(items); // sumaišom pradžioje
+    shuffle(items);
     totalComparisons = estimateComparisons(items.length);
     comparisons = 0;
     updateProgress();
