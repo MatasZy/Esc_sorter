@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eurovizijos 2026 Dainų Sorter</title>
+<title>Eurovizijos 2026 Tikslus Sorter</title>
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -12,14 +12,6 @@ body {
     color: white;
     margin: 0;
     padding: 20px;
-}
-
-h1 {
-    margin-bottom: 10px;
-}
-
-.container {
-    margin-top: 30px;
 }
 
 .song {
@@ -34,7 +26,7 @@ h1 {
 }
 
 .song:hover {
-    background: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.3);
     transform: scale(1.05);
 }
 
@@ -49,76 +41,126 @@ button {
     font-size: 16px;
 }
 
-#results {
-    margin-top: 30px;
+#progress {
+    margin-top: 15px;
+    font-size: 14px;
+    opacity: 0.8;
 }
 </style>
 </head>
 <body>
 
 <h1>🎤 Eurovizijos 2026 Dainų Sorter</h1>
-<p>Pasirink labiau patinkančią dainą ir sudaryk savo asmeninį TOP!</p>
+<p>Pasirink labiau patinkančią šalį</p>
 
-<div class="container" id="battle"></div>
-
+<div id="battle"></div>
+<div id="progress"></div>
 <div id="results"></div>
-
 <button onclick="restart()">Perkrauti</button>
 
 <script>
 let songs = [
-    "🇱🇹 Lietuva – (Artist / Song)",
-    "🇸🇪 Švedija – (Artist / Song)",
-    "🇳🇴 Norvegija – (Artist / Song)",
-    "🇫🇮 Suomija – (Artist / Song)",
-    "🇮🇹 Italija – (Artist / Song)",
-    "🇪🇸 Ispanija – (Artist / Song)",
-    "🇫🇷 Prancūzija – (Artist / Song)",
-    "🇩🇪 Vokietija – (Artist / Song)"
+    "🇱🇹 Lietuva",
+    "🇸🇪 Švedija",
+    "🇳🇴 Norvegija",
+    "🇫🇮 Suomija",
+    "🇮🇹 Italija",
+    "🇪🇸 Ispanija",
+    "🇫🇷 Prancūzija",
+    "🇩🇪 Vokietija"
 ];
 
-let queue = [...songs];
-let sorted = [];
+let list = [];
+let comparisons = 0;
+let totalComparisons = 0;
+let left = [];
+let right = [];
+let merged = [];
 
-function nextBattle() {
-    if (queue.length <= 1) {
-        if (queue.length === 1) sorted.push(queue.shift());
-        showResults();
+function mergeSort(arr) {
+    if (arr.length <= 1) return arr;
+    const mid = Math.floor(arr.length / 2);
+    return [mergeSort(arr.slice(0, mid)), mergeSort(arr.slice(mid))];
+}
+
+function countComparisons(n) {
+    return Math.ceil(n * Math.log2(n));
+}
+
+function start() {
+    list = mergeSort(songs);
+    totalComparisons = countComparisons(songs.length);
+    comparisons = 0;
+    nextMerge();
+}
+
+function nextMerge() {
+    if (list.length === 1) {
+        showResults(list[0]);
         return;
     }
 
-    let a = queue.shift();
-    let b = queue.shift();
+    left = list.shift();
+    right = list.shift();
+    merged = [];
+    compareNext();
+}
+
+function compareNext() {
+    if (left.length === 0) {
+        merged = merged.concat(right);
+        finishMerge();
+        return;
+    }
+    if (right.length === 0) {
+        merged = merged.concat(left);
+        finishMerge();
+        return;
+    }
 
     document.getElementById("battle").innerHTML = `
-        <div class="song" onclick="choose('${a}', '${b}')">${a}</div>
-        <div class="song" onclick="choose('${b}', '${a}')">${b}</div>
+        <div class="song" onclick="choose(0)">${left[0]}</div>
+        <div class="song" onclick="choose(1)">${right[0]}</div>
     `;
 }
 
-function choose(winner, loser) {
-    sorted.push(winner);
-    queue.unshift(loser);
-    nextBattle();
+function choose(side) {
+    comparisons++;
+    if (side === 0) {
+        merged.push(left.shift());
+    } else {
+        merged.push(right.shift());
+    }
+
+    document.getElementById("progress").innerText =
+        "Progresas: " + Math.round((comparisons / totalComparisons) * 100) + "%";
+
+    compareNext();
 }
 
-function showResults() {
+function finishMerge() {
+    list.push(merged);
+    nextMerge();
+}
+
+function showResults(finalList) {
     document.getElementById("battle").innerHTML = "";
-    let html = "<h2>🏆 Tavo Asmeninis TOP</h2>";
-    sorted.forEach((song, index) => {
-        html += `<p>${index + 1}. ${song}</p>`;
+    document.getElementById("progress").innerHTML = "";
+
+    let html = "<h2>🏆 Tavo Galutinis TOP</h2>";
+    finalList.forEach((song, i) => {
+        html += `<p>${i + 1}. ${song}</p>`;
     });
+
     document.getElementById("results").innerHTML = html;
 }
 
 function restart() {
-    queue = [...songs];
-    sorted = [];
     document.getElementById("results").innerHTML = "";
-    nextBattle();
+    start();
 }
 
-nextBattle();
+start();
 </script>
 
 </body>
