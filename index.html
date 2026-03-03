@@ -23,8 +23,6 @@ body {
     border-radius: 12px;
     transition: 0.2s;
     vertical-align: top;
-    cursor: pointer; /* visą bloką padaro paspaudžiamą */
-    position: relative;
 }
 
 .song:hover {
@@ -34,14 +32,29 @@ body {
 .song-title {
     font-size: 16px;
     margin-bottom: 10px;
-    pointer-events: none; /* kad spustelėjimas eitų į .song */
 }
 
 iframe {
     border-radius: 12px;
     width: 100%;
     height: 250px;
-    pointer-events: none; /* leidžia spustelėti per iframe */
+}
+
+.pick-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    background: #ff2fd1;
+    color: white;
+    transition: 0.2s;
+}
+
+.pick-btn:hover {
+    background: #ff6be3;
 }
 
 #progress {
@@ -153,20 +166,22 @@ function merge(left, right) {
 
 function showBattle(a, b, callback) {
     document.getElementById("battle").innerHTML = `
-        <div class="song" onclick="choose(0)">
+        <div class="song">
             <div class="song-title">${a.name}</div>
             <iframe src="https://open.spotify.com/embed/track/${a.spotify}?utm_source=generator"
-                width="250" height="250" frameborder="0"
+                frameborder="0"
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen">
             </iframe>
+            <button class="pick-btn" onclick="choose(0)">Pasirinkti</button>
         </div>
 
-        <div class="song" onclick="choose(1)">
+        <div class="song">
             <div class="song-title">${b.name}</div>
             <iframe src="https://open.spotify.com/embed/track/${b.spotify}?utm_source=generator"
-                width="250" height="250" frameborder="0"
+                frameborder="0"
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen">
             </iframe>
+            <button class="pick-btn" onclick="choose(1)">Pasirinkti</button>
         </div>
     `;
     window.choose = callback;
