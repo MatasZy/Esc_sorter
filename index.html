@@ -225,14 +225,34 @@ function showResults(sorted) {
 
     html += `
         <div style="margin-top:25px; padding:15px; background:rgba(255,255,255,0.1); border-radius:12px;">
-            <strong>Submit eilutė:</strong><br>
-            <code style="word-break: break-word;">${submitLine}</code>
+            <strong>Submit eilutė:</strong><br><br>
+            <code id="submitText" style="word-break: break-word; display:block; margin-bottom:10px;">
+                ${submitLine}
+            </code>
+            <button onclick="copySubmit()" 
+                style="padding:8px 16px; border:none; border-radius:8px; cursor:pointer; background:#ff2fd1; color:white;">
+                📋 Kopijuoti
+            </button>
+            <div id="copyFeedback" style="margin-top:8px; font-size:14px; opacity:0;"></div>
         </div>
     `;
 
     document.getElementById("results").innerHTML = html;
 }
 
+function copySubmit() {
+    const text = document.getElementById("submitText").innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        const feedback = document.getElementById("copyFeedback");
+        feedback.innerText = "✅ Nukopijuota!";
+        feedback.style.opacity = "1";
+
+        setTimeout(() => {
+            feedback.style.opacity = "0";
+        }, 2000);
+    });
+}
+    
 async function start() {
     let randomizedItems = [...items];
     shuffle(randomizedItems);
