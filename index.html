@@ -42,10 +42,16 @@ body {
     justify-content: center;
 }
 
-iframe {
+.spotify-frame {
     border-radius: 12px;
     width: 100%;
     height: 80px;
+}
+
+.youtube-frame {
+    border-radius: 12px;
+    width: 100%;
+    height: 140px; /* 🔥 šiek tiek didesnis už Spotify */
 }
 
 #progress {
@@ -149,14 +155,16 @@ function merge(left, right) {
 function renderPlayer(item) {
     if (item.spotify) {
         return `
-            <iframe src="https://open.spotify.com/embed/track/${item.spotify}"
+            <iframe class="spotify-frame"
+                src="https://open.spotify.com/embed/track/${item.spotify}"
                 frameborder="0"
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen">
             </iframe>
         `;
     } else if (item.youtube) {
         return `
-            <iframe src="https://www.youtube.com/embed/${item.youtube}"
+            <iframe class="youtube-frame"
+                src="https://www.youtube.com/embed/${item.youtube}"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen>
