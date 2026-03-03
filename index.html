@@ -7,7 +7,16 @@
 
 <style>
 body {
-@@ -16,15 +16,14 @@
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1e1e2f, #2a2a4f);
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    margin-bottom: 5px;
+}
 
 .song {
     display: inline-block;
@@ -18,35 +27,51 @@ body {
     border-radius: 12px;
     transition: 0.2s;
     vertical-align: top;
-    cursor: pointer; /* visą bloką padaro paspaudžiamą */
-    position: relative;
+    cursor: pointer;
 }
 
 .song:hover {
-@@ -34,14 +33,12 @@
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.03);
+}
+
 .song-title {
     font-size: 16px;
     margin-bottom: 10px;
-    pointer-events: none; /* kad spustelėjimas eitų į .song */
 }
 
 iframe {
     border-radius: 12px;
     width: 100%;
     height: 250px;
-    pointer-events: none; /* leidžia spustelėti per iframe */
 }
 
 #progress {
-@@ -53,7 +50,6 @@
-    margin-top: 25px;
+    margin-top: 20px;
+    font-size: 14px;
+    opacity: 0.8;
 }
 
-/* Responsive */
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
 @media (max-width: 600px) {
     .song {
         width: 90%;
-@@ -65,37 +61,37 @@
+    }
+}
+</style>
+</head>
 
 <body>
 
@@ -56,6 +81,7 @@ iframe {
 <div id="battle"></div>
 <div id="progress"></div>
 <div id="results"></div>
+<button onclick="restart()">🔄 Restart</button>
 
 <script>
 let items = [
@@ -84,7 +110,24 @@ let items = [
 ];
 
 let totalComparisons = 0;
-@@ -114,18 +110,15 @@ <h1>🎤 Eurovizijos 2026 Sorter</h1>
+let comparisons = 0;
+let resolver = null;
+
+function estimateComparisons(n) {
+    return Math.ceil(n * Math.log2(n));
+}
+
+function updateProgress() {
+    document.getElementById("progress").innerHTML =
+        `Progresas: ${comparisons} / ~${totalComparisons}`;
+}
+
+function choose(index) {
+    if (resolver) {
+        resolver(index);
+        resolver = null;
+    }
+}
 
 async function interactiveMergeSort(arr) {
     if (arr.length <= 1) return arr;
@@ -103,12 +146,16 @@ function merge(left, right) {
         function compare() {
             if (!left.length) {
                 resolve(result.concat(right));
-@@ -135,18 +128,14 @@ <h1>🎤 Eurovizijos 2026 Sorter</h1>
+                return;
+            }
+            if (!right.length) {
                 resolve(result.concat(left));
                 return;
             }
 
-            showBattle(left[0], right[0], choice => {
+            showBattle(left[0], right[0]);
+
+            resolver = choice => {
                 comparisons++;
                 updateProgress();
 
@@ -116,33 +163,37 @@ function merge(left, right) {
                 else result.push(right.shift());
 
                 compare();
-            });
+            };
         }
 
         compare();
     });
 }
-@@ -155,17 +144,19 @@ <h1>🎤 Eurovizijos 2026 Sorter</h1>
+
+function showBattle(a, b) {
+    document.getElementById("results").innerHTML = "";
+
     document.getElementById("battle").innerHTML = `
         <div class="song" onclick="choose(0)">
             <div class="song-title">${a.name}</div>
-            <iframe src="https://open.spotify.com/embed/track/${a.spotify}?utm_source=generator"
-                width="250" height="250" frameborder="0"
+            ${a.spotify ? `
+            <iframe src="https://open.spotify.com/embed/track/${a.spotify}"
+                frameborder="0"
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen">
-
-            </iframe>
+            </iframe>` : "<p>Spotify nuorodos nėra</p>"}
         </div>
 
         <div class="song" onclick="choose(1)">
             <div class="song-title">${b.name}</div>
-            <iframe src="https://open.spotify.com/embed/track/${b.spotify}?utm_source=generator"
-                width="250" height="250" frameborder="0"
+            ${b.spotify ? `
+            <iframe src="https://open.spotify.com/embed/track/${b.spotify}"
+                frameborder="0"
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen">
-
-            </iframe>
+            </iframe>` : "<p>Spotify nuorodos nėra</p>"}
         </div>
     `;
-@@ -180,12 +171,10 @@ <h1>🎤 Eurovizijos 2026 Sorter</h1>
+}
+
 function showResults(sorted) {
     document.getElementById("battle").innerHTML = "";
     document.getElementById("progress").innerHTML = "";
@@ -155,13 +206,19 @@ function showResults(sorted) {
     document.getElementById("results").innerHTML = html;
 }
 
-@@ -194,7 +183,6 @@ <h1>🎤 Eurovizijos 2026 Sorter</h1>
+async function start() {
     totalComparisons = estimateComparisons(items.length);
     comparisons = 0;
     updateProgress();
 
-    const sorted = await interactiveMergeSort(items);
+    const sorted = await interactiveMergeSort([...items]);
     showResults(sorted);
+}
+
+function restart() {
+    document.getElementById("results").innerHTML = "";
+    document.getElementById("battle").innerHTML = "";
+    start();
 }
 
 start();
