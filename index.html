@@ -214,13 +214,23 @@ function showResults(sorted) {
 
     document.getElementById("results").innerHTML = html;
 }
+    function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
 
 async function start() {
-    totalComparisons = countComparisons(items.length);
+
+    let randomizedItems = [...items];  // kopija
+    shuffle(randomizedItems);          // 🔥 atsitiktinė tvarka
+
+    totalComparisons = countComparisons(randomizedItems.length);
     comparisons = 0;
     updateProgress();
 
-    const sorted = await interactiveMergeSort([...items]);
+    const sorted = await interactiveMergeSort(randomizedItems);
     showResults(sorted);
 }
 
