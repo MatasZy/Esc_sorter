@@ -16,45 +16,34 @@ body {
 
 .song {
     display: inline-block;
-    width: 250px;
-    padding: 15px;
-    margin: 10px;
+    width: 300px;
+    padding: 20px;
+    margin: 15px;
     background: rgba(255,255,255,0.1);
-    border-radius: 12px;
+    border-radius: 16px;
     transition: 0.2s;
     vertical-align: top;
+    cursor: pointer;
 }
 
 .song:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.25);
+    transform: scale(1.03);
 }
 
 .song-title {
-    font-size: 16px;
-    margin-bottom: 10px;
+    font-size: 17px;
+    margin-bottom: 15px;
+}
+
+.spotify-wrapper {
+    pointer-events: auto;
 }
 
 iframe {
     border-radius: 12px;
     width: 100%;
-    height: 250px;
-}
-
-.pick-btn {
-    margin-top: 10px;
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    background: #ff2fd1;
-    color: white;
-    transition: 0.2s;
-}
-
-.pick-btn:hover {
-    background: #ff6be3;
+    height: 152px; /* mažesnis spotify grotuvas */
 }
 
 #progress {
@@ -67,10 +56,10 @@ iframe {
 }
 
 /* Responsive */
-@media (max-width: 600px) {
+@media (max-width: 700px) {
     .song {
         width: 90%;
-        margin: 10px auto;
+        margin: 15px auto;
     }
 }
 </style>
@@ -140,14 +129,8 @@ function merge(left, right) {
         let result = [];
 
         function compare() {
-            if (!left.length) {
-                resolve(result.concat(right));
-                return;
-            }
-            if (!right.length) {
-                resolve(result.concat(left));
-                return;
-            }
+            if (!left.length) return resolve(result.concat(right));
+            if (!right.length) return resolve(result.concat(left));
 
             showBattle(left[0], right[0], choice => {
                 comparisons++;
@@ -166,22 +149,26 @@ function merge(left, right) {
 
 function showBattle(a, b, callback) {
     document.getElementById("battle").innerHTML = `
-        <div class="song">
+        <div class="song" onclick="choose(0)">
             <div class="song-title">${a.name}</div>
-            <iframe src="https://open.spotify.com/embed/track/${a.spotify}?utm_source=generator"
-                frameborder="0"
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen">
-            </iframe>
-            <button class="pick-btn" onclick="choose(0)">Pasirinkti</button>
+            <div class="spotify-wrapper" onclick="event.stopPropagation()">
+                ${a.spotify ? `
+                <iframe src="https://open.spotify.com/embed/track/${a.spotify}"
+                    frameborder="0"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen">
+                </iframe>` : "<p>Spotify nuoroda nepridėta</p>"}
+            </div>
         </div>
 
-        <div class="song">
+        <div class="song" onclick="choose(1)">
             <div class="song-title">${b.name}</div>
-            <iframe src="https://open.spotify.com/embed/track/${b.spotify}?utm_source=generator"
-                frameborder="0"
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen">
-            </iframe>
-            <button class="pick-btn" onclick="choose(1)">Pasirinkti</button>
+            <div class="spotify-wrapper" onclick="event.stopPropagation()">
+                ${b.spotify ? `
+                <iframe src="https://open.spotify.com/embed/track/${b.spotify}"
+                    frameborder="0"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen">
+                </iframe>` : "<p>Spotify nuoroda nepridėta</p>"}
+            </div>
         </div>
     `;
     window.choose = callback;
