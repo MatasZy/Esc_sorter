@@ -208,17 +208,30 @@ function showResults(sorted) {
     document.getElementById("battle").innerHTML = "";
 
     let html = "<h2>🏆 Tavo Galutinis TOP</h2>";
+
     sorted.forEach((item, i) => {
         html += `<p>${i + 1}. ${item.name}</p>`;
     });
 
+    // 🔥 Sugeneruojam submit eilutę
+    const countryList = sorted.map(item => {
+        return item.name
+            .split("—")[0]        // paimam dalį iki pirmo brūkšnio
+            .replace(/[^\p{L}\s]/gu, "") // pašalinam emoji ir simbolius
+            .trim()
+            .toLowerCase();
+    });
+
+    const submitLine = `!submit 2026 ${countryList.join(", ")}`;
+
+    html += `
+        <div style="margin-top:25px; padding:15px; background:rgba(255,255,255,0.1); border-radius:12px;">
+            <strong>Submit eilutė:</strong><br>
+            <code style="word-break: break-word;">${submitLine}</code>
+        </div>
+    `;
+
     document.getElementById("results").innerHTML = html;
-}
-    function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
 }
 
 async function start() {
