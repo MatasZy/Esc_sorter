@@ -105,15 +105,13 @@ let items = [
 let totalComparisons = 0;
 let comparisons = 0;
 
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-}
-
-function estimateComparisons(n) {
-    return Math.ceil(n * Math.log2(n));
+/* 🔥 Tikslus palyginimų skaičiavimas */
+function countComparisons(n) {
+    if (n <= 1) return 0;
+    const mid = Math.floor(n / 2);
+    return countComparisons(mid)
+         + countComparisons(n - mid)
+         + (n - 1);
 }
 
 async function interactiveMergeSort(arr) {
@@ -177,13 +175,17 @@ function showBattle(a, b, callback) {
 }
 
 function updateProgress() {
+    let percent = Math.round((comparisons / totalComparisons) * 100);
+    if (percent > 100) percent = 100;
     document.getElementById("progress").innerText =
-        "Progresas: " + Math.round((comparisons / totalComparisons) * 100) + "%";
+        "Progresas: " + percent + "%";
 }
 
 function showResults(sorted) {
+    comparisons = totalComparisons;  // 🔥 garantuojam 100%
+    updateProgress();
+
     document.getElementById("battle").innerHTML = "";
-    document.getElementById("progress").innerHTML = "";
 
     let html = "<h2>🏆 Tavo Galutinis TOP</h2>";
     sorted.forEach((item, i) => {
@@ -194,12 +196,11 @@ function showResults(sorted) {
 }
 
 async function start() {
-    shuffle(items);
-    totalComparisons = estimateComparisons(items.length);
+    totalComparisons = countComparisons(items.length);
     comparisons = 0;
     updateProgress();
 
-    const sorted = await interactiveMergeSort(items);
+    const sorted = await interactiveMergeSort([...items]);
     showResults(sorted);
 }
 
